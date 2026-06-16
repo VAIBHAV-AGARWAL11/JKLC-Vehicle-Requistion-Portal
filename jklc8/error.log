@@ -1,0 +1,91 @@
+2026-06-09T09:26:14.456Z
+Error: Data too long for column 'VRQ_CATG' at row 1
+Stack: Error: Data too long for column 'VRQ_CATG' at row 1
+    at Request.create (/Users/vaibhavagarwal/jklc8/backend/models/Request.js:88:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async exports.createRequest (/Users/vaibhavagarwal/jklc8/backend/controllers/requestController.js:165:22)
+Data Sent: {
+  "employee_id": "EMP102",
+  "employee_name": "Vaibhav Agarwal",
+  "department": "IT",
+  "mobile": "8000689178",
+  "plantLocation": "Uchahar Plant",
+  "journeyType": "Official Visit",
+  "category": "Official Tour Employees",
+  "purpose": "CM",
+  "pickupLoc": "GATE",
+  "dropLoc": "MAIN ROAD",
+  "fromLoc": "JAYKAYPURAM",
+  "toLoc": "Adarsh",
+  "destLoc": "JAYKAYPURAM to Adarsh",
+  "passengers": 3,
+  "pickup_date": "2026-06-09",
+  "pickup_hour": 18,
+  "pickup_minute": 0,
+  "returnJourneyRequired": true,
+  "return_date": "2026-06-10",
+  "return_hour": 2,
+  "return_minute": 0,
+  "travellingWithGuest": false,
+  "guestName": "",
+  "guestMobile": "",
+  "remarks": "CLEAN",
+  "suggestedCategory": "Sedan",
+  "distance": 30,
+  "cost": 360,
+  "status": "REQUEST SUBMITTED",
+  "logs": [
+    {
+      "step": "Requested",
+      "time": "2026-06-09 09:26"
+    }
+  ]
+}
+Employee: {
+  "employee_id": "EMP102",
+  "employee_name": "Vaibhav Agarwal",
+  "department": "IT",
+  "designation": "SDE",
+  "role": "Employee",
+  "password": "emp456",
+  "mobile": "8000689178"
+}
+Request Data: {
+  "employee_id": "EMP102",
+  "employee_name": "Vaibhav Agarwal",
+  "department": "IT",
+  "plant_location": "Uchahar Plant",
+  "journey_type": "Official Visit",
+  "pickup_point": "GATE",
+  "drop_point": "MAIN ROAD",
+  "from_location": "JAYKAYPURAM",
+  "to_location": "Adarsh",
+  "purpose": "CM",
+  "pickup_datetime": "2026-06-09 18:00:00",
+  "return_datetime": "2026-06-10 02:00:00",
+  "passengers": 3,
+  "vehicle_category": "Sedan",
+  "mobile_number": "8000689178",
+  "remarks": "CLEAN",
+  "status": "REQUEST SUBMITTED",
+  "return_journey_required": 1,
+  "travelling_with_guest": 0,
+  "guest_name": "",
+  "guest_mobile": "",
+  "distance": 30,
+  "cost": 360,
+  "logs": [
+    {
+      "step": "Requested",
+      "time": "2026-06-09 09:26"
+    }
+  ],
+  "created_at": "2026-06-09T09:26:14.453Z",
+  "category": "Official Tour Employees",
+  "pickup_date": "2026-06-09",
+  "pickup_hour": 18,
+  "pickup_minute": 0,
+  "return_date": "2026-06-10",
+  "return_hour": 2,
+  "return_minute": 0
+}
