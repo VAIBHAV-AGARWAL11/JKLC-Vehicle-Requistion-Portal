@@ -28,4 +28,4 @@ The system replaces manual vehicle requisition processes with a centralized digi
 ## Developed By
 
 Akshat Kumar
-Intern - JK Lakshmi Cement
+[Intern] - JK Lakshmi Cement
