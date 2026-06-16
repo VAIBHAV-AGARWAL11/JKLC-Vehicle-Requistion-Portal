@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JK Lakshmi Cement - Vehicle Requisition Management System</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description"
+    content="Manage and allocate corporate vehicle requests dynamically for JK Lakshmi Cement plants, employees, and logistics operations.">
+  <meta name="keywords"
+    content="Fleet Management, Vehicle Requisition, Corporate Logistics, Plant Transport, JK Lakshmi Cement">
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js for reports -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- jsPDF for PDF reports -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body>
+
+  <!-- Login Container Wrapper -->
+  <div class="login-wrapper" id="login-wrapper">
+    <div class="login-card glass-card">
+      <div class="login-logo-area">
+        <div class="logo-container">JK</div>
+        <div>
+          <h2 class="logo-text">JK Lakshmi</h2>
+          <span class="logo-subtitle">Vehicle Portal</span>
+        </div>
+      </div>
+
+      <div class="login-header">
+        <h1>Smart Vehicle Requisition System</h1>
+        <p>Corporate Transportation Management Platform</p>
+      </div>
+
+      <form id="login-form" onsubmit="handleLoginSubmit(event)">
+        <div class="form-group" style="display: flex; flex-direction: column; gap: 8px;">
+          <label for="login-username">Employee ID <span style="color: var(--danger)">*</span></label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="login-username" class="form-control" placeholder="Enter Employee ID">
+          </div>
+        </div>
+
+        <div class="form-group" style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;">
+          <label for="login-password">Password <span style="color: var(--danger)">*</span></label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="login-password" class="form-control" placeholder="Enter Password">
+          </div>
+        </div>
+
+        <div class="login-options" style="margin-top: 16px;">
+          <label class="remember-me">
+            <input type="checkbox" id="login-remember">
+            <span>Remember Me</span>
+          </label>
+        </div>
+
+        <div class="validation-error" id="login-error-msg" style="display: none; margin-top: 16px;"></div>
+
+        <div class="login-actions" style="margin-top: 24px;">
+          <button type="submit" class="btn btn-primary btn-block login-btn-main">
+            <i class="fa-solid fa-right-to-bracket"></i> Sign In
+          </button>
+        </div>
+      </form>
+
+      <div class="login-footer" style="margin-top: 16px;">
+        <p>&copy; 2026 JK Lakshmi Cement Ltd. All Rights Reserved.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-container">
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar(event)"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="app-sidebar">
+      <div class="sidebar-header">
+        <!-- <div class="logo-container">JK</div> -->
+        <div>
+          <!-- <h2 class="logo-text">JK Lakshmi</h2>  -->
+          <img src="assets/images.png" alt="JK Lakshmi"
+            style="height: 75px; width: 185px; margin-top: 10px; margin-bottom: 10px;">
+          <span
+            style="text-align: left; margin-top: 15px; padding-top: 5px; padding-left: 5px; padding-bottom: 10px;font-weight: bold; font-size: 20px; font-family:'Times New Roman', Times, serif;"
+            class="logo-subtitle">Vehicle Portal</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="menu-item active" id="menu-item-dashboard">
+          <a class="menu-link" onclick="switchView('dashboard')">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="menu-item" id="menu-item-requisition">
+          <a class="menu-link" onclick="switchView('requisition')">
+            <i class="fa-solid fa-file-signature"></i>
+            <span>New Request</span>
+          </a>
+        </li>
+        <li class="menu-item" id="menu-item-workflow">
+          <a class="menu-link" onclick="switchView('workflow')">
+            <i class="fa-solid fa-timeline"></i>
+            <span>Approvals Portal</span>
+          </a>
+        </li>
+        <li class="menu-item" id="menu-item-analytics">
+          <a class="menu-link" onclick="switchView('analytics')">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Analytics & Reports</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120"
+          alt="User Profile" class="user-avatar-small">
+        <div class="user-info-sidebar">
+          <div class="user-name-sb">Anoop Kumar</div>
+          <div class="user-role-sb">General Manager - Operations</div>
+        </div>
+        <div class="logout-btn-sb" id="btn-logout" title="Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-workspace">
+
+      <!-- Top Navigation -->
+      <header class="top-nav">
+        <!-- Hamburger Menu for Mobile -->
+        <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" onclick="toggleSidebar(event)">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="page-title-area">
+          <h1 id="current-view-title">Dashboard Overview</h1>
+        </div>
+
+        <div class="top-nav-actions">
+
+          <div class="nav-notification-bell" id="bell-notifications-toggle" onclick="toggleNotificationCenter()">
+            <i class="fa-solid fa-bell"></i>
+            <span class="notification-badge" id="badge-notification-count">3</span>
+          </div>
+
+          <div class="user-profile-badge" id="profile-badge-dropdown" onclick="toggleProfileDropdown(event)">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120"
+              alt="Anoop Kumar" class="user-avatar-nav">
+            <div class="user-details-nav">
+              <span class="name">Anoop Kumar</span>
+              <span class="role">General Manager</span>
+            </div>
+            <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: var(--text-muted);"></i>
+
+            <!-- Profile Dropdown Menu -->
+            <div class="profile-dropdown-menu" id="profile-dropdown-menu">
+              <a href="#" onclick="handleLogout(event)">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Container -->
+      <div class="content-container">
+
+        <!-- 1. DASHBOARD VIEW -->
+        <section id="view-dashboard" class="view-section active">
+
+          <!-- Centered Dashboard Title -->
+          <div class="dashboard-center-title">
+            <h1>Smart Vehicle Requisition System</h1>
+            <p>Streamlining Corporate Transportation with Intelligent Vehicle Allocation and Fleet Efficiency.</p>
+          </div>
+
+          <!-- Statistics Grid -->
+          <div class="stats-grid">
+            <div class="stat-card glass-card">
+              <div class="stat-icon total-req">
+                <i class="fa-solid fa-clipboard-list"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-total-requests">142</span>
+                <span class="stat-label">Total Requests</span>
+              </div>
+            </div>
+
+            <div class="stat-card glass-card">
+              <div class="stat-icon active-veh">
+                <i class="fa-solid fa-truck-fast"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-active-vehicles">18</span>
+                <span class="stat-label">Active Vehicles</span>
+              </div>
+            </div>
+
+            <div class="stat-card glass-card">
+              <div class="stat-icon pending-app">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-pending-approvals">4</span>
+                <span class="stat-label">Pending Approvals</span>
+              </div>
+            </div>
+
+            <div class="stat-card glass-card">
+              <div class="stat-icon completed-trip">
+                <i class="fa-solid fa-route"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-completed-trips">118</span>
+                <span class="stat-label">Completed Trips</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Action Cards -->
+          <div class="dashboard-actions-grid">
+            <div class="action-card glass-card action-form" onclick="switchView('requisition')">
+              <div class="action-card-header">
+                <div class="action-card-icon"><i class="fa-solid fa-file-pen"></i></div>
+                <i class="fa-solid fa-arrow-right action-card-arrow"></i>
+              </div>
+              <h3>New Vehicle Request</h3>
+              <p>Submit a brand new request for employee travel, official visits, or emergency transit allocations.</p>
+            </div>
+
+            <div class="action-card glass-card action-requests" onclick="switchView('workflow')">
+              <div class="action-card-header">
+                <div class="action-card-icon"><i class="fa-solid fa-list-check"></i></div>
+                <i class="fa-solid fa-arrow-right action-card-arrow"></i>
+              </div>
+              <h3>My Requests</h3>
+              <p>Track status updates, booking logs, and timelines of your active and past requisitions.</p>
+            </div>
+
+            <div class="action-card glass-card action-approvals" onclick="switchView('workflow')">
+              <div class="action-card-header">
+                <div class="action-card-icon"><i class="fa-solid fa-user-check"></i></div>
+                <i class="fa-solid fa-arrow-right action-card-arrow"></i>
+              </div>
+              <h3>Approvals Pending</h3>
+              <p>Review and action pending transportation requisitions submitted by team members.</p>
+            </div>
+
+            <div class="action-card glass-card action-analytics" onclick="switchView('analytics')">
+              <div class="action-card-header">
+                <div class="action-card-icon"><i class="fa-solid fa-chart-simple"></i></div>
+                <i class="fa-solid fa-arrow-right action-card-arrow"></i>
+              </div>
+              <h3>Reports & Analytics</h3>
+              <p>Investigate usage patterns, department logs, vehicle utilization charts, and travel expenses.</p>
+            </div>
+          </div>
+
+          <!-- Recent Requisitions & System Feeds -->
+          <div class="dashboard-details-row">
+            <!-- Recent Requests Table -->
+            <div class="glass-card">
+              <div class="card-title-row">
+                <h2>Active and Recent Requisitions</h2>
+                <a class="view-all-btn" onclick="switchView('workflow')">View All Portal Requests</a>
+              </div>
+              <div class="responsive-table-container">
+                <table class="custom-table" id="dashboard-recent-requests-table">
+                  <thead>
+                    <tr>
+                      <th>Req ID</th>
+                      <th>Requester</th>
+                      <th>Destination</th>
+                      <th>Vehicle Category</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- JS populated -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- System Notifications Feed -->
+            <div class="glass-card">
+              <div class="card-title-row">
+                <h2>System Feed</h2>
+              </div>
+              <div class="notification-list" id="dashboard-notifications-feed">
+                <!-- JS populated -->
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- 2. VEHICLE REQUEST FORM VIEW -->
+        <section id="view-requisition" class="view-section">
+
+          <div class="form-header-banner">
+            <div>
+              <h2>New Request Form</h2>
+              <p>Please enter trip details and select the desired vehicle category.</p>
+            </div>
+            <i class="fa-solid fa-car-rear form-header-icon"></i>
+          </div>
+
+          <div class="requisition-glass-card">
+            <!-- Requisition Number & Header Metadata -->
+            <div class="form-metadata-header"
+              style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 16px;">
+              <div class="req-num-box">
+                <span
+                  style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;">Requisition
+                  Number</span>
+                <div
+                  style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 700; color: var(--primary-color);"
+                  id="req-number-display">2026001</div>
+              </div>
+            </div>
+            <form id="vehicle-request-form" onsubmit="handleRequestSubmit(event)" novalidate>
+
+              <div class="form-grid">
+
+                <!-- Plant Location -->
+                <div class="form-group">
+                  <label for="req-plant-location">Plant / Office Location <span
+                      style="color:var(--danger)">*</span></label>
+                  <select id="req-plant-location" class="form-control" required>
+                    <option value="" disabled selected>Select Location</option>
+                    <option value="Sirohi Plant">Sirohi Plant</option>
+                    <option value="Uchahar Plant">Uchahar Plant</option>
+                    <option value="Surat Plant">Surat Plant</option>
+                    <option value="Kalol Plant">Kalol Plant</option>
+                    <option value="Jharli Plant">Jharli Plant</option>
+                    <option value="Corporate Office">Corporate Office</option>
+                  </select>
+                </div>
+
+                <!-- Journey Type -->
+                <div class="form-group">
+                  <label for="req-journey-type">Journey Type <span style="color:var(--danger)">*</span></label>
+                  <select id="req-journey-type" class="form-control" required>
+                    <option value="" disabled selected>Select Type</option>
+                    <option value="Official Visit">Official </option>
+                    <option value="Personal Travel">Personal </option>
+                    <option value="Emergency Booking">Emergency Booking</option>
+                  </select>
+                </div>
+
+                <!-- Category -->
+                <div class="form-group">
+                  <label for="req-category">Category <span style="color:var(--danger)">*</span></label>
+                  <select id="req-category" class="form-control" required onchange="calculateSmartMetrics()">
+                    <option value="" disabled selected>Select Category</option>
+                  </select>
+                </div>
+
+                <!-- From Location -->
+                <div class="form-group">
+                  <label for="req-from-loc">From <span style="color:var(--danger)">*</span></label>
+                  <select id="req-from-loc" class="form-control" required onchange="calculateSmartMetrics()">
+                    <option value="" disabled selected>Select Location</option>
+                    <option value="ABU ROAD">ABU ROAD</option>
+                    <option value="AHMEDABAD">AHMEDABAD</option>
+                    <option value="AJMER">AJMER</option>
+                    <option value="Adarsh">Adarsh</option>
+                    <option value="BANAS">BANAS</option>
+                    <option value="BARODA">BARODA</option>
+                    <option value="BERMER">BERMER</option>
+                    <option value="BIKANER">BIKANER</option>
+                    <option value="DHANARI">DHANARI</option>
+                    <option value="FALNA">FALNA</option>
+                    <option value="JAIPUR">JAIPUR</option>
+                    <option value="JAYKAYPURAM">JAYKAYPURAM</option>
+                    <option value="JODHPUR">JODHPUR</option>
+                    <option value="KOJRA">KOJRA</option>
+                    <option value="MT ABU">MT ABU</option>
+                    <option value="PALANPUR">PALANPUR</option>
+                    <option value="PALI">PALI</option>
+                    <option value="PINDWARA">PINDWARA</option>
+                    <option value="SHEOGANJ">SHEOGANJ</option>
+                    <option value="SIROHI">SIROHI</option>
+                    <option value="SIROHI ROAD">SIROHI ROAD</option>
+                    <option value="SUMERPUR">SUMERPUR</option>
+                    <option value="SWARUPGANJ">SWARUPGANJ</option>
+                    <option value="TALETI">TALETI</option>
+                    <option value="UDAIPUR">UDAIPUR</option>
+                    <option value="OTHER">OTHER</option>
+                  </select>
+                </div>
+
+                <!-- To Location -->
+                <div class="form-group">
+                  <label for="req-to-loc">To <span style="color:var(--danger)">*</span></label>
+                  <select id="req-to-loc" class="form-control" required onchange="calculateSmartMetrics()">
+                    <option value="" disabled selected>Select Location</option>
+                    <option value="ABU ROAD">ABU ROAD</option>
+                    <option value="AHMEDABAD">AHMEDABAD</option>
+                    <option value="AJMER">AJMER</option>
+                    <option value="Adarsh">Adarsh</option>
+                    <option value="BANAS">BANAS</option>
+                    <option value="BARODA">BARODA</option>
+                    <option value="BERMER">BERMER</option>
+                    <option value="BIKANER">BIKANER</option>
+                    <option value="DHANARI">DHANARI</option>
+                    <option value="FALNA">FALNA</option>
+                    <option value="JAIPUR">JAIPUR</option>
+                    <option value="JAYKAYPURAM">JAYKAYPURAM</option>
+                    <option value="JODHPUR">JODHPUR</option>
+                    <option value="KOJRA">KOJRA</option>
+                    <option value="MT ABU">MT ABU</option>
+                    <option value="PALANPUR">PALANPUR</option>
+                    <option value="PALI">PALI</option>
+                    <option value="PINDWARA">PINDWARA</option>
+                    <option value="SHEOGANJ">SHEOGANJ</option>
+                    <option value="SIROHI">SIROHI</option>
+                    <option value="SIROHI ROAD">SIROHI ROAD</option>
+                    <option value="SUMERPUR">SUMERPUR</option>
+                    <option value="SWARUPGANJ">SWARUPGANJ</option>
+                    <option value="TALETI">TALETI</option>
+                    <option value="UDAIPUR">UDAIPUR</option>
+                    <option value="OTHER">OTHER</option>
+                  </select>
+                </div>
+
+                <!-- Number of Passengers -->
+                <div class="form-group">
+                  <label for="req-passengers">Number of Passengers <span style="color:var(--danger)">*</span></label>
+                  <input type="number" id="req-passengers" class="form-control" min="1" max="10" placeholder="Count"
+                    required>
+                </div>
+
+                <!-- Pickup Location -->
+                <div class="form-group">
+                  <label for="req-pickup-loc">Pickup Point <span style="color:var(--danger)">*</span></label>
+                  <input type="text" id="req-pickup-loc" class="form-control" placeholder="e.g. Sirohi Guest House"
+                    required>
+                </div>
+
+                <!-- Drop Point -->
+                <div class="form-group">
+                  <label for="req-drop-loc">Drop Point <span style="color:var(--danger)">*</span></label>
+                  <input type="text" id="req-drop-loc" class="form-control"
+                    placeholder="e.g. Abu Road Station Guest House" required>
+                </div>
+
+                <!-- Request Purpose -->
+                <div class="form-group">
+                  <label for="req-purpose">Purpose of Request <span style="color:var(--danger)">*</span></label>
+                  <input type="text" id="req-purpose" class="form-control"
+                    placeholder="e.g. Client Meeting / Shift Duty" required>
+                </div>
+
+                <!-- Date & Time Group Container (Side-by-Side) -->
+                <div class="form-group full-width form-date-grid">
+                  <!-- Pickup Date & Time -->
+                  <div class="form-group">
+                    <label>Pickup Date & Time <span style="color:var(--danger)">*</span></label>
+                    <div style="display: flex; gap: 8px;">
+                      <input type="date" id="req-pickup-date" class="form-control" style="flex: 2;" required>
+                      <select id="req-pickup-hour" class="form-control" style="flex: 1;" required>
+                        <!-- 00-23 populated dynamically -->
+                      </select>
+                      <select id="req-pickup-minute" class="form-control" style="flex: 1;" required>
+                        <!-- 00-59 populated dynamically -->
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Return Date & Time -->
+                  <div class="form-group" id="req-return-time-group" style="display: flex; flex-direction: column;">
+                    <label>Return Date & Time <span style="color:var(--danger)">*</span></label>
+                    <div style="display: flex; gap: 8px;">
+                      <input type="date" id="req-return-date" class="form-control" style="flex: 2;" required>
+                      <select id="req-return-hour" class="form-control" style="flex: 1;" required>
+                        <!-- 00-23 populated dynamically -->
+                      </select>
+                      <select id="req-return-minute" class="form-control" style="flex: 1;" required>
+                        <!-- 00-59 populated dynamically -->
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Checkboxes Group -->
+                <div class="form-group full-width" style="display: flex; gap: 16px; margin-top: 8px;">
+                  <label class="checkbox-container">
+                    <input type="checkbox" id="req-return-journey-checkbox" checked onchange="toggleReturnJourney()">
+                    <span>Return Journey Required</span>
+                  </label>
+                  <label class="checkbox-container">
+                    <input type="checkbox" id="req-guest-checkbox" onchange="toggleGuestSection()">
+                    <span>Travelling with Guest</span>
+                  </label>
+                </div>
+
+                <!-- Guest Details Section (Optional) -->
+                <div class="form-group full-width" id="guest-details-section"
+                  style="display: none; border: 1px dashed rgba(255, 255, 255, 0.25); padding: 20px; border-radius: 16px; background: rgba(255, 255, 255, 0.03); margin-top: 8px;">
+                  <h4
+                    style="margin-top: 0; margin-bottom: 16px; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--primary-color); text-transform: uppercase; letter-spacing: 0.5px;">
+                    <i class="fa-solid fa-user-group" style="margin-right: 8px;"></i> Guest Information
+                  </h4>
+                  <div class="guest-details-grid">
+                    <div class="form-group">
+                      <label for="req-guest-name">Guest Name</label>
+                      <input type="text" id="req-guest-name" class="form-control" placeholder="Enter Guest Full Name">
+                    </div>
+                    <div class="form-group">
+                      <label for="req-guest-mobile">Guest Mobile Number</label>
+                      <input type="tel" id="req-guest-mobile" class="form-control" placeholder="10-digit mobile number"
+                        pattern="[0-9]{10}">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Section Header for Employee Info -->
+                <div class="form-group full-width"
+                  style="border-top: 1px solid rgba(255,255,255,0.15); padding-top: 24px; margin-top: 16px;">
+                  <h4
+                    style="margin: 0; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--primary-color); text-transform: uppercase; letter-spacing: 0.5px;">
+                    <i class="fa-solid fa-address-card" style="margin-right: 8px;"></i> Employee Information
+                  </h4>
+                </div>
+
+                <!-- Employee ID -->
+                <div class="form-group">
+                  <label for="req-emp-id">Employee ID <span style="color:var(--danger)">*</span></label>
+                  <input type="text" id="req-emp-id" class="form-control" placeholder="e.g. EMP101" required>
+                </div>
+
+                <!-- Employee Name -->
+                <div class="form-group">
+                  <label for="req-emp-name">Employee Name <span style="color:var(--danger)">*</span></label>
+                  <input type="text" id="req-emp-name" class="form-control" placeholder="Enter Full Name" required>
+                </div>
+
+                <!-- Department -->
+                <div class="form-group">
+                  <label for="req-dept">Department <span style="color:var(--danger)">*</span></label>
+                  <input type="text" id="req-dept" class="form-control" placeholder="Enter Department" required>
+                </div>
+
+                <!-- Mobile Number -->
+                <div class="form-group">
+                  <label for="req-emp-mobile">Mobile Number <span style="color:var(--danger)">*</span></label>
+                  <input type="tel" id="req-emp-mobile" class="form-control" placeholder="10-digit number"
+                    pattern="[0-9]{10}" required>
+                </div>
+
+
+
+                <!-- Special Remarks -->
+                <div class="form-group full-width">
+                  <label for="req-remarks">Special Remarks / Extra Instructions</label>
+                  <textarea id="req-remarks" class="form-control"
+                    placeholder="Describe special requests (e.g. child seat, extra luggage space, multi-stop route)"></textarea>
+                </div>
+
+              </div>
+
+              <!-- SMART FEATURES PANEL -->
+              <div class="smart-features-container">
+
+                <div class="smart-feature-card">
+                  <div class="smart-icon-box availability">
+                    <i class="fa-solid fa-circle-check"></i>
+                  </div>
+                  <div class="smart-details">
+                    <span class="smart-label">Vehicle Availability</span>
+                    <span class="smart-value" id="smart-availability">Select Dates</span>
+                  </div>
+                </div>
+
+                <div class="smart-feature-card">
+                  <div class="smart-icon-box category">
+                    <i class="fa-solid fa-car"></i>
+                  </div>
+                  <div class="smart-details">
+                    <span class="smart-label">Suggested Class</span>
+                    <span class="smart-value" id="smart-suggested-category">Select Category</span>
+                  </div>
+                </div>
+
+                <div class="smart-feature-card">
+                  <div class="smart-icon-box distance">
+                    <i class="fa-solid fa-road"></i>
+                  </div>
+                  <div class="smart-details">
+                    <span class="smart-label">Est. Distance</span>
+                    <span class="smart-value" id="smart-distance">-- km</span>
+                  </div>
+                </div>
+
+                <div class="smart-feature-card">
+                  <div class="smart-icon-box cost">
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                  </div>
+                  <div class="smart-details">
+                    <span class="smart-label">Est. Trip Cost</span>
+                    <span class="smart-value" id="smart-cost">₹0.00</span>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Submit Actions -->
+              <div class="form-actions" style="margin-top: 32px;">
+                <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                  <i class="fa-solid fa-trash-can"></i> Reset Form
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="saveDraftRequest(event)"
+                  style="background: rgba(255, 255, 255, 0.05); color: var(--text-main);">
+                  <i class="fa-solid fa-floppy-disk"></i> Save Draft
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="previewRequestDetails(event)"
+                  style="background: rgba(255, 255, 255, 0.05); color: var(--text-main);">
+                  <i class="fa-solid fa-eye"></i> Preview Request
+                </button>
+                <button type="submit" class="btn btn-primary" id="btn-submit-requisition">
+                  <i class="fa-solid fa-circle-check"></i> Submit Requisition
+                </button>
+              </div>
+
+              <!-- Request Status Section -->
+              <div class="status-section-container"
+                style="margin-top: 32px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.15); display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                  <span
+                    style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;">Requisition
+                    Status</span>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="badge badge-pending" id="req-status-badge" style="font-size: 13px; padding: 6px 14px;">
+                      <span class="badge-dot"></span>
+                      Pending Approval
+                    </span>
+                  </div>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); text-align: right;">
+                  <div>Last updated: <span id="req-status-updated-time">Just Now</span></div>
+                </div>
+              </div>
+
+            </form>
+          </div>
+
+        </section>
+
+        <!-- 3. APPROVAL WORKFLOW PAGE -->
+        <section id="view-workflow" class="view-section">
+
+          <div class="workflow-top-bar">
+            <div class="workflow-status-filter">
+              <button class="filter-btn active" onclick="filterWorkflow('all')">All Requisitions</button>
+              <button class="filter-btn" onclick="filterWorkflow('pending')">Pending Action</button>
+              <button class="filter-btn" onclick="filterWorkflow('approved')">Approved & Active</button>
+              <button class="filter-btn" onclick="filterWorkflow('completed')">Completed</button>
+            </div>
+
+            <div class="user-role-disclaimer">
+              <i class="fa-solid fa-circle-info" style="color: var(--secondary-color);"></i>
+              <span style="font-size: 12px; font-weight: 500; margin-left: 6px; color: var(--text-muted);">Showing
+                actions eligible for your profile</span>
+            </div>
+          </div>
+
+          <div id="workflow-list-container">
+            <!-- JS populated with timeline components -->
+          </div>
+
+        </section>
+
+
+
+        <!-- 6. ANALYTICS & REPORTS PAGE -->
+        <section id="view-analytics" class="view-section">
+
+          <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+            <button class="btn btn-success" id="btn-download-report" onclick="openDownloadReportModal()" style="background-color: #28a745; border-color: #28a745; color: white; display: none; font-size: 14px; font-weight: 600; padding: 10px 20px; border-radius: 8px; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);">
+              <i class="fa-solid fa-file-excel"></i> Download Report
+            </button>
+          </div>
+
+          <div class="analytics-grid">
+
+            <!-- Usage Over Time -->
+            <div class="glass-card chart-card">
+              <div class="card-title-row">
+                <h2>Monthly Vehicle Usage</h2>
+              </div>
+              <div class="chart-container">
+                <canvas id="chart-monthly-usage"></canvas>
+              </div>
+            </div>
+
+            <!-- Department wise requests -->
+            <div class="glass-card chart-card">
+              <div class="card-title-row">
+                <h2>Department Wise Allocations</h2>
+              </div>
+              <div class="chart-container">
+                <canvas id="chart-dept-requests"></canvas>
+              </div>
+            </div>
+
+            <!-- Vehicle Utilization -->
+            <div class="glass-card chart-card">
+              <div class="card-title-row">
+                <h2>Vehicle Utilization Rates</h2>
+              </div>
+              <div class="chart-container">
+                <canvas id="chart-vehicle-utilization"></canvas>
+              </div>
+            </div>
+
+            <!-- Top Destinations -->
+            <div class="glass-card chart-card">
+              <div class="card-title-row">
+                <h2>Top Travel Routes & Destinations</h2>
+              </div>
+              <div class="chart-container">
+                <canvas id="chart-destinations"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- 7. REGISTER VEHICLE VIEW -->
+        <section id="view-vehicles" class="view-section">
+          <div class="form-header-banner">
+            <div>
+              <h2>Register & Manage Vehicles</h2>
+              <p>Add new vehicles recently purchased by the company to the active fleet database.</p>
+            </div>
+            <i class="fa-solid fa-car-side form-header-icon"></i>
+          </div>
+
+          <div class="vehicles-grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px; align-items: start;">
+            <!-- Registration Form Card -->
+            <div class="glass-card">
+              <h3 style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 700; color: var(--primary-color); margin-bottom: 20px;">
+                <i class="fa-solid fa-plus-circle" style="margin-right: 8px;"></i>Register New Vehicle
+              </h3>
+              <form id="register-vehicle-form" onsubmit="handleVehicleRegistration(event)">
+                <div class="form-group" style="margin-bottom: 16px;">
+                  <label for="reg-veh-no" style="font-size: 13px; font-weight: 500;">Vehicle Number <span style="color:var(--danger)">*</span></label>
+                  <input type="text" id="reg-veh-no" class="form-control" placeholder="e.g. RJ-24-CA-1234" required>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 16px;">
+                  <label for="reg-veh-model" style="font-size: 13px; font-weight: 500;">Model Name <span style="color:var(--danger)">*</span></label>
+                  <input type="text" id="reg-veh-model" class="form-control" placeholder="e.g. Maruti Suzuki Swift" required>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                  <label for="reg-veh-category" style="font-size: 13px; font-weight: 500;">Vehicle Category <span style="color:var(--danger)">*</span></label>
+                  <select id="reg-veh-category" class="form-control" required>
+                    <option value="" disabled selected>Select Category</option>
+                    <option value="Hatchback">Hatchback</option>
+                    <option value="Sedan">Sedan</option>
+                    <option value="Premium Sedan">Premium Sedan</option>
+                    <option value="SUV">SUV</option>
+                    <option value="Executive Vehicle">Executive Vehicle</option>
+                  </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                  <label for="reg-veh-driver" style="font-size: 13px; font-weight: 500;">Driver Name <span style="color:var(--danger)">*</span></label>
+                  <input type="text" id="reg-veh-driver" class="form-control" placeholder="Enter Driver's Full Name" required>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 24px;">
+                  <label for="reg-veh-driver-mob" style="font-size: 13px; font-weight: 500;">Driver Mobile Number <span style="color:var(--danger)">*</span></label>
+                  <input type="tel" id="reg-veh-driver-mob" class="form-control" placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-plus"></i> Register Vehicle
+                </button>
+              </form>
+            </div>
+
+            <!-- Vehicle Fleet Table Card -->
+            <div class="glass-card">
+              <div class="card-title-row">
+                <h2>Registered Vehicle Fleet</h2>
+                <div style="font-size: 12px; color: var(--text-muted); font-weight: 500;" id="fleet-count-badge">Total: 0 vehicles</div>
+              </div>
+              <div class="responsive-table-container">
+                <table class="custom-table" id="registered-vehicles-table">
+                  <thead>
+                    <tr>
+                      <th>Vehicle No</th>
+                      <th>Model / Category</th>
+                      <th>Driver Info</th>
+                      <th>Status</th>
+                      <th style="text-align: center;">Change Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Reassign Driver / Edit Vehicle Modal -->
+  <div class="modal-overlay" id="driver-assignment-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Driver Assignment Module</h3>
+        <i class="fa-solid fa-xmark modal-close" onclick="closeDriverModal()"></i>
+      </div>
+      <div class="modal-body">
+        <form id="driver-assign-form" onsubmit="handleDriverAssignment(event)">
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label for="modal-select-vehicle">Select Fleet Vehicle</label>
+            <select id="modal-select-vehicle" class="form-control" required>
+              <!-- JS populated -->
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label for="modal-driver-name">Assign Driver Name</label>
+            <input type="text" id="modal-driver-name" class="form-control" readonly required placeholder="Driver will be auto-populated">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="checkbox-container">
+              <input type="checkbox" id="modal-special-approval">
+              <span>Special Approval</span>
+            </label>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label for="modal-ded-emp-code">Amt Ded Emp</label>
+            <input type="text" id="modal-ded-emp-code" class="form-control" placeholder="Enter employee code" maxlength="6">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label for="modal-deduction-amount">Deduction Amount (₹)</label>
+            <input type="number" id="modal-deduction-amount" class="form-control" placeholder="Enter deduction amount" min="0">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label for="modal-sms-sent">SMS Sent</label>
+            <select id="modal-sms-sent" class="form-control" required>
+              <option value="No">No</option>
+              <option value="Yes" selected>Yes</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeDriverModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="btn-submit-driver-assign">Assign & Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview Requisition Modal -->
+  <div class="modal-overlay" id="requisition-preview-modal">
+    <div class="modal-content glass-card"
+      style="border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(15, 23, 42, 0.98); max-width: 600px; width: 90%;">
+      <div class="modal-header"
+        style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);">
+        <h3>Requisition Preview</h3>
+        <i class="fa-solid fa-xmark modal-close" onclick="closePreviewModal()"></i>
+      </div>
+      <div class="modal-body" id="preview-modal-body"
+        style="color: #ffffff; font-size: 14px; line-height: 1.6; max-height: 70vh; overflow-y: auto; padding: 24px;">
+        <!-- JS populated -->
+      </div>
+      <div class="modal-footer"
+        style="padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: flex-end; gap: 12px; background: rgba(0,0,0,0.2); border-radius: 0 0 16px 16px;">
+        <button type="button" class="btn btn-secondary" onclick="closePreviewModal()">Close Preview</button>
+        <button type="button" class="btn btn-primary" onclick="submitFromPreview()">
+          <i class="fa-solid fa-circle-check"></i> Confirm & Submit
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Download Report Modal -->
+  <div class="modal-overlay" id="download-report-modal">
+    <div class="modal-content glass-card" style="border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(15, 23, 42, 0.98); max-width: 600px; width: 90%;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%);">
+        <h3><i class="fa-solid fa-file-excel"></i> Export Requisition Reports</h3>
+        <i class="fa-solid fa-xmark modal-close" onclick="closeDownloadReportModal()"></i>
+      </div>
+      <div class="modal-body" style="color: #ffffff; padding: 24px;">
+        <form id="download-report-form" onsubmit="handleDownloadReport(event)">
+          <div class="modal-form-grid">
+            <div class="form-group">
+              <label for="report-from-date" style="color: #ffffff; font-size: 13px;">From Date <span style="color:var(--danger)">*</span></label>
+              <input type="date" id="report-from-date" class="form-control" required style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff;">
+            </div>
+            <div class="form-group">
+              <label for="report-to-date" style="color: #ffffff; font-size: 13px;">To Date <span style="color:var(--danger)">*</span></label>
+              <input type="date" id="report-to-date" class="form-control" required style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff;">
+            </div>
+          </div>
+          
+          <div class="modal-form-grid">
+            <div class="form-group">
+              <label for="report-plant" style="color: #ffffff; font-size: 13px;">Plant / Office Location</label>
+              <select id="report-plant" class="form-control" style="background: rgba(15, 23, 42, 0.98); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff;">
+                <option value="">All Locations</option>
+                <option value="Sirohi Plant">Sirohi Plant</option>
+                <option value="Uchahar Plant">Uchahar Plant</option>
+                <option value="Surat Plant">Surat Plant</option>
+                <option value="Kalol Plant">Kalol Plant</option>
+                <option value="Jharli Plant">Jharli Plant</option>
+                <option value="Corporate Office">Corporate Office</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="report-dept" style="color: #ffffff; font-size: 13px;">Department</label>
+              <input type="text" id="report-dept" class="form-control" placeholder="e.g. Operations" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff;">
+            </div>
+          </div>
+
+          <div class="modal-form-grid">
+            <div class="form-group">
+              <label for="report-journey-type" style="color: #ffffff; font-size: 13px;">Journey Type</label>
+              <select id="report-journey-type" class="form-control" style="background: rgba(15, 23, 42, 0.98); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff;">
+                <option value="">All Types</option>
+                <option value="Official Visit">Official</option>
+                <option value="Personal Travel">Personal</option>
+                <option value="Emergency Booking">Emergency Booking</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="report-category" style="color: #ffffff; font-size: 13px;">Vehicle Category</label>
+              <select id="report-category" class="form-control" style="background: rgba(15, 23, 42, 0.98); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff;">
+                <option value="">All Categories</option>
+                <option value="Hatchback">Hatchback</option>
+                <option value="Sedan">Sedan</option>
+                <option value="Premium Sedan">Premium Sedan</option>
+                <option value="SUV">SUV</option>
+                <option value="Executive Vehicle">Executive Vehicle</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-form-grid" style="margin-bottom: 24px;">
+            <div class="form-group">
+              <label for="report-status" style="color: #ffffff; font-size: 13px;">Request Status</label>
+              <select id="report-status" class="form-control" style="background: rgba(15, 23, 42, 0.98); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff;">
+                <option value="">All Statuses</option>
+                <option value="REQUEST SUBMITTED">Pending HOD Approval</option>
+                <option value="HOD APPROVED">HOD Approved</option>
+                <option value="VEHICLE ASSIGNED">Vehicle Assigned</option>
+                <option value="TRIP COMPLETED">Trip Completed</option>
+                <option value="REJECTED">Rejected</option>
+                <option value="Draft">Draft</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="report-employee-id" style="color: #ffffff; font-size: 13px;">Employee ID</label>
+              <input type="text" id="report-employee-id" class="form-control" placeholder="e.g. EMP101" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff;">
+            </div>
+          </div>
+
+          <div id="report-preview-section" style="display: none; margin-bottom: 24px;">
+            <h4 style="margin: 0 0 12px 0; font-size: 14px; text-transform: uppercase; color: #28a745; letter-spacing: 0.5px;">Report Preview</h4>
+            <div id="report-preview-status" style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;"></div>
+            <div style="max-height: 180px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; background: rgba(0,0,0,0.2);">
+              <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
+                <thead>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);">
+                    <th style="padding: 8px;">Req ID</th>
+                    <th style="padding: 8px;">Employee</th>
+                    <th style="padding: 8px;">Destination</th>
+                    <th style="padding: 8px;">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="report-preview-table-body">
+                  <!-- JS populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="form-actions" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; display: flex; justify-content: flex-end; gap: 12px;">
+            <button type="button" class="btn btn-secondary" onclick="closeDownloadReportModal()" style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1);">Cancel</button>
+            <button type="button" class="btn" onclick="generateReportPreview()" style="background-color: #17a2b8; color: white; font-weight: 600; border-radius: 8px; border: none; padding: 10px 20px; cursor: pointer;">Generate Preview</button>
+            <button type="button" class="btn" onclick="handleDownloadPDF(event)" style="background-color: #dc3545; color: white; font-weight: 600; border-radius: 8px; border: none; padding: 10px 20px; cursor: pointer;">
+              <i class="fa-solid fa-file-pdf"></i> Download PDF
+            </button>
+            <button type="submit" class="btn" style="background-color: #28a745; color: white; font-weight: 600; border-radius: 8px; border: none; padding: 10px 20px; cursor: pointer;">Download Excel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Overlay Container -->
+  <div class="toast-container" id="toast-notification-holder"></div>
+
+  <!-- Application Script -->
+  <script src="app.js"></script>
+</body>
+
+</html>
