@@ -160,7 +160,6 @@ function sendSMSNotification(req, driverName, vehicleNo, modelName) {
 // AUTHENTICATION MODULE STATE & LOGIC
 // ====================================================
 const AUTH_KEY = "jklc_auth_session";
-const REMEMBER_KEY = "jklc_remember_user";
 const API_BASE = window.location.port === '5500' ? window.location.origin.replace(':5500', ':3000') : '';
 
 function initDatabase() {
@@ -209,7 +208,6 @@ function fetchRequisitionsAndInit() {
 
 function initAuth() {
   const session = localStorage.getItem(AUTH_KEY);
-  const remember = localStorage.getItem(REMEMBER_KEY);
 
   if (session) {
     try {
@@ -223,10 +221,6 @@ function initAuth() {
     }
   } else {
     document.body.classList.remove("authenticated");
-    if (remember) {
-      document.getElementById("login-username").value = remember;
-      document.getElementById("login-remember").checked = true;
-    }
   }
 }
 
@@ -234,7 +228,6 @@ function handleLoginSubmit(event) {
   event.preventDefault();
   const usernameInput = document.getElementById("login-username");
   const passwordInput = document.getElementById("login-password");
-  const rememberCheckbox = document.getElementById("login-remember");
   const errorMsg = document.getElementById("login-error-msg");
 
   const username = usernameInput.value.trim();
@@ -247,10 +240,10 @@ function handleLoginSubmit(event) {
   }
 
   errorMsg.style.display = "none";
-  performLogin(username, password, rememberCheckbox.checked);
+  performLogin(username, password);
 }
 
-function performLogin(username, password, remember) {
+function performLogin(username, password) {
   fetch(API_BASE + '/login', {
     method: 'POST',
     headers: {
@@ -264,12 +257,6 @@ function performLogin(username, password, remember) {
         const sessionData = authResponse.employee;
 
         localStorage.setItem(AUTH_KEY, JSON.stringify(sessionData));
-
-        if (remember) {
-          localStorage.setItem(REMEMBER_KEY, username);
-        } else {
-          localStorage.removeItem(REMEMBER_KEY);
-        }
 
         document.body.classList.add("authenticated");
         updateLoggedUserUI(sessionData);
@@ -433,6 +420,10 @@ function handleLogout(event) {
   // Reset password field
   const pwdInput = document.getElementById("login-password");
   if (pwdInput) pwdInput.value = "";
+
+  // Reset username field
+  const usernameInput = document.getElementById("login-username");
+  if (usernameInput) usernameInput.value = "";
 
   showToast("toast-info", "Logged out successfully.");
 }

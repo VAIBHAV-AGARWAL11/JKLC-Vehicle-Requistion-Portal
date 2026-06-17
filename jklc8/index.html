@@ -26,12 +26,9 @@
   <!-- Login Container Wrapper -->
   <div class="login-wrapper" id="login-wrapper">
     <div class="login-card glass-card">
-      <div class="login-logo-area">
-        <div class="logo-container">JK</div>
-        <div>
-          <h2 class="logo-text">JK Lakshmi</h2>
-          <span class="logo-subtitle">Vehicle Portal</span>
-        </div>
+      <div class="login-logo-area" style="flex-direction: column; align-items: center; gap: 8px;">
+        <img src="assets/jklc new logo.avif" alt="JK Lakshmi Cement" style="width: 150px; height: 85px; object-fit: contain; border-radius: 8px; background: #ffffff; padding: 6px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); margin-bottom: 5px;">
+        <span style="font-weight: bold; font-size: 16px; font-family: 'Times New Roman', Times, serif; color: var(--text-main); text-transform: uppercase; letter-spacing: 1.5px;">Vehicle Portal</span>
       </div>
 
       <div class="login-header">
@@ -56,12 +53,7 @@
           </div>
         </div>
 
-        <div class="login-options" style="margin-top: 16px;">
-          <label class="remember-me">
-            <input type="checkbox" id="login-remember">
-            <span>Remember Me</span>
-          </label>
-        </div>
+
 
         <div class="validation-error" id="login-error-msg" style="display: none; margin-top: 16px;"></div>
 
@@ -86,12 +78,12 @@
     <aside class="sidebar" id="app-sidebar">
       <div class="sidebar-header">
         <!-- <div class="logo-container">JK</div> -->
-        <div>
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
           <!-- <h2 class="logo-text">JK Lakshmi</h2>  -->
-          <img src="assets/images.png" alt="JK Lakshmi"
-            style="height: 75px; width: 185px; margin-top: 10px; margin-bottom: 10px;">
+          <img src="assets/jklc new logo.avif" alt="JK Lakshmi"
+            style="width: 160px; height: 90px; object-fit: contain; border-radius: 8px; background: #ffffff; padding: 6px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); display: block; margin-bottom: 8px;">
           <span
-            style="text-align: left; margin-top: 15px; padding-top: 5px; padding-left: 5px; padding-bottom: 10px;font-weight: bold; font-size: 20px; font-family:'Times New Roman', Times, serif;"
+            style="text-align: center; font-weight: bold; font-size: 20px; font-family:'Times New Roman', Times, serif; letter-spacing: 1px;"
             class="logo-subtitle">Vehicle Portal</span>
         </div>
       </div>
@@ -897,8 +889,7 @@
         style="color: #ffffff; font-size: 14px; line-height: 1.6; max-height: 70vh; overflow-y: auto; padding: 24px;">
         <!-- JS populated -->
       </div>
-      <div class="modal-footer"
-        style="padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: flex-end; gap: 12px; background: rgba(0,0,0,0.2); border-radius: 0 0 16px 16px;">
+      <div class="modal-footer modal-form-actions" style="background: rgba(0,0,0,0.2); border-radius: 0 0 16px 16px; padding: 16px 24px; border-top: none;">
         <button type="button" class="btn btn-secondary" onclick="closePreviewModal()">Close Preview</button>
         <button type="button" class="btn btn-primary" onclick="submitFromPreview()">
           <i class="fa-solid fa-circle-check"></i> Confirm & Submit
@@ -1008,7 +999,7 @@
             </div>
           </div>
 
-          <div class="form-actions" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; display: flex; justify-content: flex-end; gap: 12px;">
+          <div class="modal-form-actions">
             <button type="button" class="btn btn-secondary" onclick="closeDownloadReportModal()" style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1);">Cancel</button>
             <button type="button" class="btn" onclick="generateReportPreview()" style="background-color: #17a2b8; color: white; font-weight: 600; border-radius: 8px; border: none; padding: 10px 20px; cursor: pointer;">Generate Preview</button>
             <button type="button" class="btn" onclick="handleDownloadPDF(event)" style="background-color: #dc3545; color: white; font-weight: 600; border-radius: 8px; border: none; padding: 10px 20px; cursor: pointer;">
