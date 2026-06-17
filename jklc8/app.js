@@ -58,11 +58,11 @@ let vehicleAllocations = [];
 // Initial Fleet Dummy Data
 let fleet = [
   { id: "V01", vehicleNo: "RJ-24-CA-1234", modelName: "Maruti Suzuki Swift", category: "Hatchback", driverName: "Amit Sharma", status: "Available", rate: 8 },
-  { id: "V02", vehicleNo: "RJ-24-CB-5678", modelName: "Honda City", category: "Sedan", driverName: "Rajesh Kumar", status: "Available", rate: 8 },
-  { id: "V03", vehicleNo: "DL-3C-AY-8899", modelName: "Toyota Camry Hybrid", category: "Premium Sedan", driverName: "Vijay Yadav", status: "Available", rate: 10 },
-  { id: "V04", vehicleNo: "RJ-24-CC-9911", modelName: "Mahindra XUV700", category: "SUV", driverName: "Ramesh Singh", status: "Available", rate: 10 },
-  { id: "V05", vehicleNo: "DL-1C-AA-0007", modelName: "Audi A6 Limo", category: "Executive Vehicle", driverName: "None (Assigned)", status: "Available", rate: 12 },
-  { id: "V06", vehicleNo: "RJ-24-CD-2468", modelName: "Hyundai Verna", category: "Sedan", driverName: "Sanjay Patel", status: "Available", rate: 8 }
+  { id: "V02", vehicleNo: "RJ-24-CB-5678", modelName: "Honda City", category: "Sedan", driverName: "Rajesh Kumar", status: "Available", rate: 12 },
+  { id: "V03", vehicleNo: "DL-3C-AY-8899", modelName: "Toyota Camry Hybrid", category: "Premium Sedan", driverName: "Vijay Yadav", status: "Available", rate: 18 },
+  { id: "V04", vehicleNo: "RJ-24-CC-9911", modelName: "Mahindra XUV700", category: "SUV", driverName: "Ramesh Singh", status: "Available", rate: 18 },
+  { id: "V05", vehicleNo: "DL-1C-AA-0007", modelName: "Audi A6 Limo", category: "Executive Vehicle", driverName: "None (Assigned)", status: "Available", rate: 35 },
+  { id: "V06", vehicleNo: "RJ-24-CD-2468", modelName: "Hyundai Verna", category: "Sedan", driverName: "Sanjay Patel", status: "Available", rate: 12 }
 ];
 
 // Systems Notifications Center
@@ -79,172 +79,6 @@ const DRIVER_DETAILS = {
   "Ramesh Singh": { phone: "+91 88776 65544", license: "Heavy Commercial", rating: "4.6 ★" },
   "Sanjay Patel": { phone: "+91 77665 54433", license: "Light Commercial", rating: "4.8 ★" }
 };
-
-// Global Distance matrix & lookup (shared logic with backend)
-function getDistance(from, to) {
-  if (!from || !to) return 0;
-  const f = from.trim().toUpperCase();
-  const t = to.trim().toUpperCase();
-  
-  if (f === t) return 0;
-  
-  // Try exact lookup first (alphabetically ordered keys)
-  const key = [f, t].sort().join("-");
-  
-  const lookup = {
-    // Jaykaypuram routes
-    "ABU ROAD-JAYKAYPURAM": 25,
-    "AHMEDABAD-JAYKAYPURAM": 210,
-    "AJMER-JAYKAYPURAM": 310,
-    "ADARSH-JAYKAYPURAM": 35,
-    "BANAS-JAYKAYPURAM": 10,
-    "BARODA-JAYKAYPURAM": 340,
-    "BERMER-JAYKAYPURAM": 220,
-    "BIKANER-JAYKAYPURAM": 420,
-    "DHANARI-JAYKAYPURAM": 15,
-    "FALNA-JAYKAYPURAM": 95,
-    "JAIPUR-JAYKAYPURAM": 440,
-    "JAYKAYPURAM-JODHPUR": 240,
-    "JAYKAYPURAM-KOJRA": 15,
-    "JAYKAYPURAM-MT ABU": 50,
-    "JAYKAYPURAM-PALANPUR": 80,
-    "JAYKAYPURAM-PALI": 175,
-    "JAYKAYPURAM-PINDWARA": 30,
-    "JAYKAYPURAM-SHEOGANJ": 85,
-    "JAYKAYPURAM-SIROHI": 35,
-    "JAYKAYPURAM-SIROHI ROAD": 25,
-    "JAYKAYPURAM-SUMERPUR": 85,
-    "JAYKAYPURAM-SWARUPGANJ": 10,
-    "JAYKAYPURAM-TALETI": 20,
-    "JAYKAYPURAM-UDAIPUR": 140,
-    
-    // Abu Road routes
-    "ABU ROAD-AHMEDABAD": 190,
-    "ABU ROAD-AJMER": 330,
-    "ABU ROAD-ADARSH": 15,
-    "ABU ROAD-BANAS": 30,
-    "ABU ROAD-BARODA": 320,
-    "ABU ROAD-BERMER": 260,
-    "ABU ROAD-BIKANER": 450,
-    "ABU ROAD-DHANARI": 35,
-    "ABU ROAD-FALNA": 145,
-    "ABU ROAD-JAIPUR": 465,
-    "ABU ROAD-JODHPUR": 215,
-    "ABU ROAD-KOJRA": 40,
-    "ABU ROAD-MT ABU": 28,
-    "ABU ROAD-PALANPUR": 55,
-    "ABU ROAD-PALI": 185,
-    "ABU ROAD-PINDWARA": 55,
-    "ABU ROAD-SHEOGANJ": 135,
-    "ABU ROAD-SIROHI": 70,
-    "ABU ROAD-SIROHI ROAD": 45,
-    "ABU ROAD-SUMERPUR": 130,
-    "ABU ROAD-SWARUPGANJ": 30,
-    "ABU ROAD-TALETI": 5,
-    "ABU ROAD-UDAIPUR": 150,
-    
-    // Sirohi routes
-    "AHMEDABAD-SIROHI": 240,
-    "AJMER-SIROHI": 260,
-    "ADARSH-SIROHI": 85,
-    "BANAS-SIROHI": 65,
-    "BARODA-SIROHI": 370,
-    "BERMER-SIROHI": 200,
-    "BIKANER-SIROHI": 380,
-    "DHANARI-SIROHI": 50,
-    "FALNA-SIROHI": 75,
-    "JAIPUR-SIROHI": 390,
-    "JODHPUR-SIROHI": 180,
-    "KOJRA-SIROHI": 30,
-    "MT ABU-SIROHI": 80,
-    "PALANPUR-SIROHI": 115,
-    "PALI-SIROHI": 110,
-    "PINDWARA-SIROHI": 25,
-    "SHEOGANJ-SIROHI": 65,
-    "SIROHI-SIROHI ROAD": 25,
-    "SIROHI-SUMERPUR": 60,
-    "SIROHI-SWARUPGANJ": 45,
-    "SIROHI-TALETI": 65,
-    "SIROHI-UDAIPUR": 120,
-    
-    // Banas routes
-    "AHMEDABAD-BANAS": 220,
-    "AJMER-BANAS": 300,
-    "ADARSH-BANAS": 45,
-    "BANAS-BARODA": 350,
-    "BANAS-BERMER": 210,
-    "BANAS-BIKANER": 410,
-    "BANAS-DHANARI": 25,
-    "BANAS-FALNA": 90,
-    "BANAS-JAIPUR": 430,
-    "BANAS-JODHPUR": 235,
-    "BANAS-KOJRA": 25,
-    "BANAS-MT ABU": 60,
-    "BANAS-PALANPUR": 90,
-    "BANAS-PALI": 165,
-    "BANAS-PINDWARA": 20,
-    "BANAS-SHEOGANJ": 80,
-    "BANAS-SIROHI ROAD": 15,
-    "BANAS-SUMERPUR": 80,
-    "BANAS-SWARUPGANJ": 15,
-    "BANAS-TALETI": 30,
-    "BANAS-UDAIPUR": 135
-  };
-
-  if (lookup[key] !== undefined) {
-    return lookup[key];
-  }
-
-  // Fallback coordinates
-  const coords = {
-    "ABU ROAD": [24.48, 72.78],
-    "AHMEDABAD": [23.02, 72.57],
-    "AJMER": [26.45, 74.64],
-    "ADARSH": [24.43, 72.75],
-    "BANAS": [24.63, 72.85],
-    "BARODA": [22.31, 73.18],
-    "BERMER": [25.75, 71.42],
-    "BIKANER": [28.02, 73.31],
-    "DHANARI": [24.64, 72.78],
-    "FALNA": [25.23, 73.24],
-    "JAIPUR": [26.91, 75.79],
-    "JAYKAYPURAM": [24.60, 72.85],
-    "JODHPUR": [26.24, 73.02],
-    "KOJRA": [24.77, 72.88],
-    "MT ABU": [24.59, 72.72],
-    "PALANPUR": [24.17, 72.43],
-    "PALI": [25.77, 73.32],
-    "PINDWARA": [24.79, 73.05],
-    "SHEOGANJ": [25.15, 73.06],
-    "SIROHI": [24.88, 72.86],
-    "SIROHI ROAD": [24.75, 72.95],
-    "SUMERPUR": [25.15, 73.08],
-    "SWARUPGANJ": [24.69, 72.92],
-    "TALETI": [24.51, 72.76],
-    "UDAIPUR": [24.59, 73.71]
-  };
-
-  const c1 = coords[f];
-  const c2 = coords[t];
-
-  if (c1 && c2) {
-    const [lat1, lon1] = c1;
-    const [lat2, lon2] = c2;
-    const R = 6371; // km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const straightDist = R * c;
-    const factor = (f.includes("UDAIPUR") || t.includes("UDAIPUR") || f.includes("MT ABU") || t.includes("MT ABU")) ? 1.5 : 1.25;
-    return Math.round(straightDist * factor);
-  }
-
-  if (f === "OTHER" || t === "OTHER") return 50;
-  return 30;
-}
 
 // Simulated SMS dispatch notifications helper
 function sendSMSNotification(req, driverName, vehicleNo, modelName) {
@@ -326,6 +160,7 @@ function sendSMSNotification(req, driverName, vehicleNo, modelName) {
 // AUTHENTICATION MODULE STATE & LOGIC
 // ====================================================
 const AUTH_KEY = "jklc_auth_session";
+const REMEMBER_KEY = "jklc_remember_user";
 const API_BASE = window.location.port === '5500' ? window.location.origin.replace(':5500', ':3000') : '';
 
 function initDatabase() {
@@ -374,6 +209,7 @@ function fetchRequisitionsAndInit() {
 
 function initAuth() {
   const session = localStorage.getItem(AUTH_KEY);
+  const remember = localStorage.getItem(REMEMBER_KEY);
 
   if (session) {
     try {
@@ -387,6 +223,10 @@ function initAuth() {
     }
   } else {
     document.body.classList.remove("authenticated");
+    if (remember) {
+      document.getElementById("login-username").value = remember;
+      document.getElementById("login-remember").checked = true;
+    }
   }
 }
 
@@ -394,6 +234,7 @@ function handleLoginSubmit(event) {
   event.preventDefault();
   const usernameInput = document.getElementById("login-username");
   const passwordInput = document.getElementById("login-password");
+  const rememberCheckbox = document.getElementById("login-remember");
   const errorMsg = document.getElementById("login-error-msg");
 
   const username = usernameInput.value.trim();
@@ -406,10 +247,10 @@ function handleLoginSubmit(event) {
   }
 
   errorMsg.style.display = "none";
-  performLogin(username, password);
+  performLogin(username, password, rememberCheckbox.checked);
 }
 
-function performLogin(username, password) {
+function performLogin(username, password, remember) {
   fetch(API_BASE + '/login', {
     method: 'POST',
     headers: {
@@ -423,6 +264,12 @@ function performLogin(username, password) {
         const sessionData = authResponse.employee;
 
         localStorage.setItem(AUTH_KEY, JSON.stringify(sessionData));
+
+        if (remember) {
+          localStorage.setItem(REMEMBER_KEY, username);
+        } else {
+          localStorage.removeItem(REMEMBER_KEY);
+        }
 
         document.body.classList.add("authenticated");
         updateLoggedUserUI(sessionData);
@@ -587,10 +434,6 @@ function handleLogout(event) {
   const pwdInput = document.getElementById("login-password");
   if (pwdInput) pwdInput.value = "";
 
-  // Reset username field
-  const usernameInput = document.getElementById("login-username");
-  if (usernameInput) usernameInput.value = "";
-
   showToast("toast-info", "Logged out successfully.");
 }
 
@@ -610,13 +453,14 @@ window.addEventListener("click", () => {
   }
 });
 
-
-
 /*
 JK Lakshmi Vehicle Requisition Portal
 Developed by Akshat Kumar, Vaibhav Agarwal and Rishita Bothra [2026]
 All Rights Reserved
 */
+
+
+
 
 
 // ON APP INITIALIZE
@@ -1106,53 +950,46 @@ function calculateSmartMetrics() {
   if (categorySelect) {
     if (categorySelect.includes("Govt Officials")) {
       suggested = "Executive Vehicle";
-      rate = 12;
+      rate = 35;
     } else if (categorySelect.includes("Ladies Club") || categorySelect.includes("CSR")) {
       suggested = "SUV";
-      rate = 10;
+      rate = 18;
     } else if (categorySelect.includes("HO Employees")) {
       suggested = "Premium Sedan";
-      rate = 10;
+      rate = 18;
     } else if (categorySelect.includes("pers.") || categorySelect.includes("Banas")) {
       suggested = "Hatchback";
       rate = 8;
     } else {
       suggested = "Sedan";
-      rate = 8;
+      rate = 12;
     }
   }
 
   const categoryEl = document.getElementById("smart-suggested-category");
   if (categoryEl) categoryEl.innerText = suggested;
 
-  // 2. Resolve distance based on from/to location selection using getDistance() helper
-  let distance = getDistance(fromSelect, toSelect);
-  const returnJourneyCheckbox = document.getElementById("req-return-journey-checkbox");
-  const isReturn = returnJourneyCheckbox ? returnJourneyCheckbox.checked : false;
-
-  let totalDistance = distance;
-  if (isReturn && distance > 0) {
-    totalDistance = distance * 2;
-  }
+  // 2. Mock distances mapping based on from/to location selection
+  let distance = 0;
+  const combined = `${fromSelect} ${toSelect}`.toUpperCase();
+  if (combined.includes("AHMEDABAD")) distance = 210;
+  else if (combined.includes("UDAIPUR")) distance = 140;
+  else if (combined.includes("JAIPUR")) distance = 440;
+  else if (combined.includes("ABU ROAD")) distance = 25;
+  else if (combined.includes("SIROHI")) distance = 25;
+  else if (combined.includes("OTHER")) distance = 50;
+  else if (fromSelect && toSelect) distance = 30;
 
   const distanceEl = document.getElementById("smart-distance");
   if (distanceEl) {
-    if (distance > 0) {
-      if (isReturn) {
-        distanceEl.innerHTML = `${totalDistance} km <span style="font-size: 14px; font-weight: 500; color: var(--text-muted); display: block; margin-top: 4px;">(${distance} km going & ${distance} km coming)</span>`;
-      } else {
-        distanceEl.innerText = `${distance} km`;
-      }
-    } else {
-      distanceEl.innerText = "-- km";
-    }
+    distanceEl.innerText = distance > 0 ? `${distance} km` : "-- km";
   }
 
   // 3. Trip Cost calculation (Distance * Mileage Rate)
   const costEl = document.getElementById("smart-cost");
   if (costEl) {
-    if (totalDistance > 0 && rate > 0) {
-      const estimatedCost = totalDistance * rate;
+    if (distance > 0 && rate > 0) {
+      const estimatedCost = distance * rate;
       costEl.innerText = `₹${estimatedCost.toLocaleString("en-IN")}.00`;
     } else {
       costEl.innerText = "₹0.00";
@@ -1264,29 +1101,21 @@ function handleRequestSubmit(event) {
     if (!dept) { showToast("toast-danger", "Department is missing."); return; }
     if (!mobile.trim()) { showToast("toast-danger", "Please enter Mobile Number."); return; }
 
-    const phoneRegex = /^\d{10}$/;
-    if (!phoneRegex.test(mobile.trim())) {
-      showToast("toast-danger", "Employee Mobile Number must be exactly 10 digits.");
-      return;
-    }
+    let distance = 0;
+    const combinedLoc = `${fromLoc} ${toLoc}`.toUpperCase();
+    if (combinedLoc.includes("AHMEDABAD")) distance = 210;
+    else if (combinedLoc.includes("UDAIPUR")) distance = 140;
+    else if (combinedLoc.includes("JAIPUR")) distance = 440;
+    else if (combinedLoc.includes("ABU ROAD")) distance = 25;
+    else if (combinedLoc.includes("SIROHI")) distance = 25;
+    else if (combinedLoc.includes("OTHER")) distance = 50;
+    else if (fromLoc && toLoc) distance = 30;
 
-    if (travellingWithGuest && guestMobile.trim()) {
-      if (!phoneRegex.test(guestMobile.trim())) {
-        showToast("toast-danger", "Guest Mobile Number must be exactly 10 digits.");
-        return;
-      }
-    }
-
-    let distance = getDistance(fromLoc, toLoc);
-    if (returnJourneyRequired && distance > 0) {
-      distance = distance * 2;
-    }
-
-    let rate = 8; // Sedan default
+    let rate = 12;
     if (suggestedCategory === "Hatchback") rate = 8;
-    else if (suggestedCategory === "Premium Sedan") rate = 10;
-    else if (suggestedCategory === "SUV") rate = 10;
-    else if (suggestedCategory === "Executive Vehicle") rate = 12;
+    else if (suggestedCategory === "Premium Sedan") rate = 18;
+    else if (suggestedCategory === "SUV") rate = 18;
+    else if (suggestedCategory === "Executive Vehicle") rate = 35;
 
     const cost = distance * rate;
 
@@ -1567,7 +1396,6 @@ function toggleReturnJourney() {
       }
     }
   }
-  calculateSmartMetrics();
 }
 
 function toggleGuestSection() {
@@ -1623,16 +1451,21 @@ function saveDraftRequest(event) {
 
   const suggestedCategory = document.getElementById("smart-suggested-category").innerText;
 
-  let distance = getDistance(fromLoc, toLoc);
-  if (returnJourneyRequired && distance > 0) {
-    distance = distance * 2;
-  }
+  let distance = 0;
+  const combinedLoc = `${fromLoc} ${toLoc}`.toUpperCase();
+  if (combinedLoc.includes("AHMEDABAD")) distance = 210;
+  else if (combinedLoc.includes("UDAIPUR")) distance = 140;
+  else if (combinedLoc.includes("JAIPUR")) distance = 440;
+  else if (combinedLoc.includes("ABU ROAD")) distance = 25;
+  else if (combinedLoc.includes("SIROHI")) distance = 25;
+  else if (combinedLoc.includes("OTHER")) distance = 50;
+  else if (fromLoc && toLoc) distance = 30;
 
-  let rate = 8; // Sedan default
+  let rate = 12;
   if (suggestedCategory === "Hatchback") rate = 8;
-  else if (suggestedCategory === "Premium Sedan") rate = 10;
-  else if (suggestedCategory === "SUV") rate = 10;
-  else if (suggestedCategory === "Executive Vehicle") rate = 12;
+  else if (suggestedCategory === "Premium Sedan") rate = 18;
+  else if (suggestedCategory === "SUV") rate = 18;
+  else if (suggestedCategory === "Executive Vehicle") rate = 35;
 
   const cost = distance * rate;
 

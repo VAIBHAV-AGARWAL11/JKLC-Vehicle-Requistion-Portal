@@ -53,7 +53,7 @@ function formatRequest(row) {
     ded_emp_code: row.ded_emp_code,
     deduction_amount: row.deduction_amount,
     sms_sent: row.sms_sent,
-
+    
     // New fields
     category: row.category,
     pickup_date: row.pickup_date,

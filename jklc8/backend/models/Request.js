@@ -3,172 +3,6 @@
 
 const db = require('../db');
 
-// Global Distance matrix & lookup (shared logic with frontend)
-function getDistance(from, to) {
-  if (!from || !to) return 0;
-  const f = from.trim().toUpperCase();
-  const t = to.trim().toUpperCase();
-  
-  if (f === t) return 0;
-  
-  // Try exact lookup first (alphabetically ordered keys)
-  const key = [f, t].sort().join("-");
-  
-  const lookup = {
-    // Jaykaypuram routes
-    "ABU ROAD-JAYKAYPURAM": 25,
-    "AHMEDABAD-JAYKAYPURAM": 210,
-    "AJMER-JAYKAYPURAM": 310,
-    "ADARSH-JAYKAYPURAM": 35,
-    "BANAS-JAYKAYPURAM": 10,
-    "BARODA-JAYKAYPURAM": 340,
-    "BERMER-JAYKAYPURAM": 220,
-    "BIKANER-JAYKAYPURAM": 420,
-    "DHANARI-JAYKAYPURAM": 15,
-    "FALNA-JAYKAYPURAM": 95,
-    "JAIPUR-JAYKAYPURAM": 440,
-    "JAYKAYPURAM-JODHPUR": 240,
-    "JAYKAYPURAM-KOJRA": 15,
-    "JAYKAYPURAM-MT ABU": 50,
-    "JAYKAYPURAM-PALANPUR": 80,
-    "JAYKAYPURAM-PALI": 175,
-    "JAYKAYPURAM-PINDWARA": 30,
-    "JAYKAYPURAM-SHEOGANJ": 85,
-    "JAYKAYPURAM-SIROHI": 35,
-    "JAYKAYPURAM-SIROHI ROAD": 25,
-    "JAYKAYPURAM-SUMERPUR": 85,
-    "JAYKAYPURAM-SWARUPGANJ": 10,
-    "JAYKAYPURAM-TALETI": 20,
-    "JAYKAYPURAM-UDAIPUR": 140,
-    
-    // Abu Road routes
-    "ABU ROAD-AHMEDABAD": 190,
-    "ABU ROAD-AJMER": 330,
-    "ABU ROAD-ADARSH": 15,
-    "ABU ROAD-BANAS": 30,
-    "ABU ROAD-BARODA": 320,
-    "ABU ROAD-BERMER": 260,
-    "ABU ROAD-BIKANER": 450,
-    "ABU ROAD-DHANARI": 35,
-    "ABU ROAD-FALNA": 145,
-    "ABU ROAD-JAIPUR": 465,
-    "ABU ROAD-JODHPUR": 215,
-    "ABU ROAD-KOJRA": 40,
-    "ABU ROAD-MT ABU": 28,
-    "ABU ROAD-PALANPUR": 55,
-    "ABU ROAD-PALI": 185,
-    "ABU ROAD-PINDWARA": 55,
-    "ABU ROAD-SHEOGANJ": 135,
-    "ABU ROAD-SIROHI": 70,
-    "ABU ROAD-SIROHI ROAD": 45,
-    "ABU ROAD-SUMERPUR": 130,
-    "ABU ROAD-SWARUPGANJ": 30,
-    "ABU ROAD-TALETI": 5,
-    "ABU ROAD-UDAIPUR": 150,
-    
-    // Sirohi routes
-    "AHMEDABAD-SIROHI": 240,
-    "AJMER-SIROHI": 260,
-    "ADARSH-SIROHI": 85,
-    "BANAS-SIROHI": 65,
-    "BARODA-SIROHI": 370,
-    "BERMER-SIROHI": 200,
-    "BIKANER-SIROHI": 380,
-    "DHANARI-SIROHI": 50,
-    "FALNA-SIROHI": 75,
-    "JAIPUR-SIROHI": 390,
-    "JODHPUR-SIROHI": 180,
-    "KOJRA-SIROHI": 30,
-    "MT ABU-SIROHI": 80,
-    "PALANPUR-SIROHI": 115,
-    "PALI-SIROHI": 110,
-    "PINDWARA-SIROHI": 25,
-    "SHEOGANJ-SIROHI": 65,
-    "SIROHI-SIROHI ROAD": 25,
-    "SIROHI-SUMERPUR": 60,
-    "SIROHI-SWARUPGANJ": 45,
-    "SIROHI-TALETI": 65,
-    "SIROHI-UDAIPUR": 120,
-    
-    // Banas routes
-    "AHMEDABAD-BANAS": 220,
-    "AJMER-BANAS": 300,
-    "ADARSH-BANAS": 45,
-    "BANAS-BARODA": 350,
-    "BANAS-BERMER": 210,
-    "BANAS-BIKANER": 410,
-    "BANAS-DHANARI": 25,
-    "BANAS-FALNA": 90,
-    "BANAS-JAIPUR": 430,
-    "BANAS-JODHPUR": 235,
-    "BANAS-KOJRA": 25,
-    "BANAS-MT ABU": 60,
-    "BANAS-PALANPUR": 90,
-    "BANAS-PALI": 165,
-    "BANAS-PINDWARA": 20,
-    "BANAS-SHEOGANJ": 80,
-    "BANAS-SIROHI ROAD": 15,
-    "BANAS-SUMERPUR": 80,
-    "BANAS-SWARUPGANJ": 15,
-    "BANAS-TALETI": 30,
-    "BANAS-UDAIPUR": 135
-  };
-
-  if (lookup[key] !== undefined) {
-    return lookup[key];
-  }
-
-  // Fallback coordinates
-  const coords = {
-    "ABU ROAD": [24.48, 72.78],
-    "AHMEDABAD": [23.02, 72.57],
-    "AJMER": [26.45, 74.64],
-    "ADARSH": [24.43, 72.75],
-    "BANAS": [24.63, 72.85],
-    "BARODA": [22.31, 73.18],
-    "BERMER": [25.75, 71.42],
-    "BIKANER": [28.02, 73.31],
-    "DHANARI": [24.64, 72.78],
-    "FALNA": [25.23, 73.24],
-    "JAIPUR": [26.91, 75.79],
-    "JAYKAYPURAM": [24.60, 72.85],
-    "JODHPUR": [26.24, 73.02],
-    "KOJRA": [24.77, 72.88],
-    "MT ABU": [24.59, 72.72],
-    "PALANPUR": [24.17, 72.43],
-    "PALI": [25.77, 73.32],
-    "PINDWARA": [24.79, 73.05],
-    "SHEOGANJ": [25.15, 73.06],
-    "SIROHI": [24.88, 72.86],
-    "SIROHI ROAD": [24.75, 72.95],
-    "SUMERPUR": [25.15, 73.08],
-    "SWARUPGANJ": [24.69, 72.92],
-    "TALETI": [24.51, 72.76],
-    "UDAIPUR": [24.59, 73.71]
-  };
-
-  const c1 = coords[f];
-  const c2 = coords[t];
-
-  if (c1 && c2) {
-    const [lat1, lon1] = c1;
-    const [lat2, lon2] = c2;
-    const R = 6371; // km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const straightDist = R * c;
-    const factor = (f.includes("UDAIPUR") || t.includes("UDAIPUR") || f.includes("MT ABU") || t.includes("MT ABU")) ? 1.5 : 1.25;
-    return Math.round(straightDist * factor);
-  }
-
-  if (f === "OTHER" || t === "OTHER") return 50;
-  return 30;
-}
-
 class Request {
   /**
    * Helper to format request ID / requisition number for database lookups
@@ -219,8 +53,8 @@ class Request {
         LOCATION, REQLOCATION, REQNO, REQDT, REQTYP,
         FROMDEST, TODEST, FROMDATE, TODATE, PICKPOINT, DROPOINT,
         APPFLG, RECFLG, DETAILS, NOPER, REQBY, MOBNO, FORTHEEMP,
-        VRQ_CATG, VRQ_CATG_DESC, COST_CENTER, FARE_AMOUNT, RETURNFLG
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VRQ_CATG, VRQ_CATG_DESC, COST_CENTER, RETURNFLG
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const fromDate = data.pickup_datetime ? new Date(data.pickup_datetime) : null;
@@ -248,7 +82,6 @@ class Request {
       data.vehicle_category, // VRQ_CATG
       data.category,       // VRQ_CATG_DESC
       data.cost_center || '100', // COST_CENTER
-      data.cost || 0.00,   // FARE_AMOUNT
       data.return_journey_required ? 1 : 0 // RETURNFLG
     ];
 
@@ -333,8 +166,6 @@ class Request {
       logs.push({ step: 'Trip Completed', time: timeStr });
     }
 
-    const isReturn = row.RETURNFLG === 1 || row.RETURNFLG === '1' || row.RETURNFLG === true || row.RETURNFLG === 'Y' || row.RETURNFLG === 'true';
-
     return {
       request_id: reqId,
       id: row.REQNO,
@@ -353,7 +184,7 @@ class Request {
       passengers: row.NOPER,
       pickup_datetime: fromDate,
       return_datetime: toDate,
-      return_journey_required: isReturn ? 1 : 0,
+      return_journey_required: row.RETURNFLG === 1,
       travelling_with_guest: 0,
       guest_name: '',
       guest_mobile: '',
@@ -376,8 +207,8 @@ class Request {
       return_date: returnDate,
       return_hour: returnHour,
       return_minute: returnMinute,
-      distance: isReturn ? getDistance(row.FROMDEST, row.TODEST) * 2 : getDistance(row.FROMDEST, row.TODEST),
-      cost: row.FARE_AMOUNT !== null && row.FARE_AMOUNT !== undefined ? Number(row.FARE_AMOUNT) : 0
+      distance: 0,
+      cost: 0
     };
   }
 
@@ -586,7 +417,7 @@ class Request {
         FROMDEST = ?, TODEST = ?, FROMDATE = ?, TODATE = ?,
         PICKPOINT = ?, DROPOINT = ?, APPFLG = ?, DETAILS = ?,
         NOPER = ?, MOBNO = ?, FORTHEEMP = ?, VRQ_CATG = ?,
-        VRQ_CATG_DESC = ?, COST_CENTER = ?, FARE_AMOUNT = ?, RETURNFLG = ?
+        VRQ_CATG_DESC = ?, COST_CENTER = ?, RETURNFLG = ?
       WHERE REQNO = ?
     `;
 
@@ -612,7 +443,6 @@ class Request {
       data.vehicle_category, // VRQ_CATG
       data.category,       // VRQ_CATG_DESC
       data.cost_center || '100', // COST_CENTER
-      data.cost || 0.00,   // FARE_AMOUNT
       data.return_journey_required ? 1 : 0, // RETURNFLG
       reqNo
     ];
