@@ -460,6 +460,18 @@
                     placeholder="e.g. Client Meeting / Shift Duty" required>
                 </div>
 
+                <!-- Checkboxes Group (Moved Above Date & Time Container) -->
+                <div class="form-group full-width" style="display: flex; gap: 16px; margin-top: 8px; margin-bottom: 8px;">
+                  <label class="checkbox-container">
+                    <input type="checkbox" id="req-return-journey-checkbox" onchange="toggleReturnJourney()">
+                    <span>Return Journey Required</span>
+                  </label>
+                  <label class="checkbox-container">
+                    <input type="checkbox" id="req-guest-checkbox" onchange="toggleGuestSection()">
+                    <span>Travelling with Guest</span>
+                  </label>
+                </div>
+
                 <!-- Date & Time Group Container (Side-by-Side) -->
                 <div class="form-group full-width form-date-grid">
                   <!-- Pickup Date & Time -->
@@ -476,8 +488,8 @@
                     </div>
                   </div>
 
-                  <!-- Return Date & Time -->
-                  <div class="form-group" id="req-return-time-group" style="display: flex; flex-direction: column;">
+                  <!-- Return Date & Time (Initially Hidden) -->
+                  <div class="form-group" id="req-return-time-group" style="display: none; flex-direction: column;">
                     <label>Return Date & Time <span style="color:var(--danger)">*</span></label>
                     <div style="display: flex; gap: 8px;">
                       <input type="date" id="req-return-date" class="form-control" style="flex: 2;" required>
@@ -489,18 +501,6 @@
                       </select>
                     </div>
                   </div>
-                </div>
-
-                <!-- Checkboxes Group -->
-                <div class="form-group full-width" style="display: flex; gap: 16px; margin-top: 8px;">
-                  <label class="checkbox-container">
-                    <input type="checkbox" id="req-return-journey-checkbox" checked onchange="toggleReturnJourney()">
-                    <span>Return Journey Required</span>
-                  </label>
-                  <label class="checkbox-container">
-                    <input type="checkbox" id="req-guest-checkbox" onchange="toggleGuestSection()">
-                    <span>Travelling with Guest</span>
-                  </label>
                 </div>
 
                 <!-- Guest Details Section (Optional) -->
@@ -518,7 +518,7 @@
                     <div class="form-group">
                       <label for="req-guest-mobile">Guest Mobile Number</label>
                       <input type="tel" id="req-guest-mobile" class="form-control" placeholder="10-digit mobile number"
-                        pattern="[0-9]{10}">
+                        pattern="[0-9]{10}" maxlength="10">
                     </div>
                   </div>
                 </div>
@@ -554,7 +554,7 @@
                 <div class="form-group">
                   <label for="req-emp-mobile">Mobile Number <span style="color:var(--danger)">*</span></label>
                   <input type="tel" id="req-emp-mobile" class="form-control" placeholder="10-digit number"
-                    pattern="[0-9]{10}" required>
+                    pattern="[0-9]{10}" maxlength="10" required>
                 </div>
 
 
