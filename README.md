@@ -1,10 +1,10 @@
-# 🚗 JKLC Vehicle Requisition Portal
+#  JKLC Vehicle Requisition Portal
 
 A web-based Vehicle Requisition Management System developed during my internship at **JK Lakshmi Cement Ltd.** to streamline vehicle request, approval, and tracking processes within the organization.
 
 ---
 
-## 📌 Project Overview
+##  Project Overview
 
 The JKLC Vehicle Requisition Portal is designed to digitize and automate vehicle requisition workflows. The system enables employees to submit vehicle requests, while administrators can review, approve, monitor, and manage transportation requirements efficiently.
 
@@ -12,7 +12,7 @@ This project was developed as part of my internship experience in the IT Departm
 
 ---
 
-## ✨ Features
+##  Features
 
 - Vehicle requisition request submission
 - Request approval and management workflow
@@ -25,7 +25,7 @@ This project was developed as part of my internship experience in the IT Departm
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 ### Frontend
 - HTML
@@ -45,7 +45,7 @@ This project was developed as part of my internship experience in the IT Departm
 
 ---
 
-## 🎯 Objectives
+##  Objectives
 
 - Automate vehicle requisition processes
 - Reduce manual approval delays
@@ -55,7 +55,7 @@ This project was developed as part of my internship experience in the IT Departm
 
 ---
 
-## 💼 Internship Experience
+##  Internship Experience
 
 This project was developed during my internship at:
 
@@ -72,7 +72,7 @@ During the internship, I gained practical experience in:
 
 ---
 
-## 📚 Key Learnings
+##  Key Learnings
 
 - Microsoft IIS Server Administration
 - Application Deployment Strategies
@@ -83,7 +83,7 @@ During the internship, I gained practical experience in:
 
 ---
 
-## 🚀 Future Enhancements
+##  Future Enhancements
 
 - Email Notifications
 - Dashboard Analytics
@@ -93,7 +93,7 @@ During the internship, I gained practical experience in:
 
 ---
 
-## 👨‍💻 Author
+##  Author
 
 **Vaibhav Agarwal**
 
@@ -106,4 +106,4 @@ LinkedIn: https://www.linkedin.com/in/vaibhavag11/
 
 ---
 
-⭐ If you found this project interesting, consider giving it a star.
+ If you found this project interesting, consider giving it a star.
