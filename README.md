@@ -1,4 +1,4 @@
-#  JKLC Vehicle Requisition Portal
+#  JKLC Vehicle Requisition Portal.
 
 A web-based Vehicle Requisition Management System developed during my internship at **JK Lakshmi Cement Ltd.** to streamline vehicle request, approval, and tracking processes within the organization.
 
